@@ -1,31 +1,38 @@
 part of 'maplist_bloc.dart';
 
-sealed class MaplistState extends Equatable {
-  const MaplistState();
-  
+enum MaplistStatus { initial, loading, loaded, failure }
+
+final class MaplistState extends Equatable {
+  final MaplistStatus status;
+  final List<LocationModel> locations;
+  final bool hasReachedMax;
+  final int page;
+  final String? message;
+
+  const MaplistState({
+    this.status = MaplistStatus.initial,
+    this.locations = const <LocationModel>[],
+    this.hasReachedMax = false,
+    this.page = 1,
+    this.message = '',
+  });
+
+  MaplistState copyWith({
+    MaplistStatus? status,
+    List<LocationModel>? locations,
+    bool? hasReachedMax,
+    int? page,
+    String? message,
+  }) {
+    return MaplistState(
+      status: status ?? this.status,
+      locations: locations ?? this.locations,
+      hasReachedMax: hasReachedMax ?? this.hasReachedMax,
+      page: page ?? this.page,
+      message: message ?? this.message,
+    );
+  }
+
   @override
-  List<Object> get props => [];
-}
-
-final class MaplistInitial extends MaplistState {}
-
-// Map List
-final class MaplistLoading extends MaplistState {}
-
-final class MaplistLoaded extends MaplistState {
-  final List<MapModel> maps;
-
-  const MaplistLoaded({required this.maps});
-
-  @override
-  List<Object> get props => [maps];
-}
-
-final class MaplistFailure extends MaplistState {
-  final String error;
-
-  const MaplistFailure({required this.error});
-
-  @override
-  List<Object> get props => [error];
+  List<Object> get props => [status, locations, hasReachedMax, page, message!];
 }

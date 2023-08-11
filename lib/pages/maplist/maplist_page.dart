@@ -10,49 +10,54 @@ class MaplistPage extends StatefulWidget {
 }
 
 class _MaplistPageState extends State<MaplistPage> {
+  final _scrollController = ScrollController();
+
+    @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+  }
+
   @override
   Widget build(BuildContext context) {
-    // return Scaffold(
-    //   appBar: AppBar(
-    //       backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-    //       title: const Text('Maplist')),
-    //   body: const Center(
-    //     child: Text('Maplist Page'),
-    //   ),
-    // );
-
     return BlocProvider(
         create: (context) => MaplistBloc()..add(MaplistFetched()),
         child: BlocConsumer<MaplistBloc, MaplistState>(
           listener: (context, state) {
-            if (state is MaplistFailure) {
+            if(state.status == MaplistStatus.failure) {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(state.error)),
+                const SnackBar(content: Text('asdasd'))
               );
             }
           },
           builder: (context, state) {
-            if (state is MaplistInitial) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (state is MaplistLoading) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (state is MaplistLoaded) {
-              return Scaffold(
-                appBar: AppBar(
-                    backgroundColor:
-                        Theme.of(context).colorScheme.inversePrimary,
-                    title: const Text('Maplist')),
-                body: Container(
-                  child: Center(
-                    child:  Text('Maplist Page 5555'),
-                  ),
-                )
-              );
-            } else {
-              return const Center(child: CircularProgressIndicator());
-            }
+            print(state.locations);
+            return Container(
+              child: Center(
+                child:  Text('Maplist Page 5555'),
+              ),
+            );
           },
         ),
     );
+  }
+
+  @override
+  void dispose() {
+    _scrollController
+      ..removeListener(_onScroll)
+      ..dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_isBottom) context.read<MaplistBloc>().add(MaplistFetched());
+  }
+
+  bool get _isBottom {
+    if (!_scrollController.hasClients) return false;
+    final maxScroll = _scrollController.position.maxScrollExtent;
+    final currentScroll = _scrollController.offset;
+    return currentScroll >= (maxScroll * 0.9);
   }
 }

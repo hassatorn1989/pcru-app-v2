@@ -8,14 +8,3 @@ sealed class MaplistEvent extends Equatable {
 }
 
 final class MaplistFetched extends MaplistEvent {}
-
-final class MaplistRefreshed extends MaplistEvent {}
-
-final class MaplistSearched extends MaplistEvent {
-  final String query;
-
-  const MaplistSearched({required this.query});
-
-  @override
-  List<Object> get props => [query];
-}
